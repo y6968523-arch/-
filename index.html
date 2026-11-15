@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#102a43">
+<title>منصة أ. سيد حسن | الكيمياء</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+:root{--navy:#102a43;--blue:#2563eb;--cyan:#06b6d4;--bg:#f4f7fb}
+*{box-sizing:border-box}body{font-family:Cairo,sans-serif;background:var(--bg);color:#102033}
+button,input,select,textarea{font:inherit}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #67e8f9;outline-offset:2px}
+.page{display:none}.page.active{display:block}.glass{background:#ffffffed;backdrop-filter:blur(12px)}
+.btn{border-radius:12px;padding:10px 16px;font-weight:800;transition:.2s}.btn-primary{background:linear-gradient(120deg,#0e7490,#2563eb);color:white}.btn-primary:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn-soft{background:#eaf2ff;color:#1d4ed8}.field{width:100%;border:1px solid #d8e1ec;border-radius:12px;padding:11px 13px;background:white;color:#102033}.field:focus{border-color:#2563eb;outline:2px solid #bfdbfe}
+.card{background:white;border:1px solid #e2e8f0;border-radius:20px;box-shadow:0 8px 30px #0f172a08}
+.toast{position:fixed;bottom:20px;left:20px;z-index:80;background:#102a43;color:white;padding:12px 18px;border-radius:12px;opacity:0;transform:translateY(15px);transition:.25s;pointer-events:none}.toast.show{opacity:1;transform:none}
+.modal{position:fixed;inset:0;z-index:70;background:#0f172acc;display:none;align-items:center;justify-content:center;padding:16px}.modal.show{display:flex}
+@media(max-width:640px){.hero-title{font-size:2rem}.navlinks{display:none}.mobile-nav{display:flex}}
+</style>
+</head>
+<body class="min-h-screen flex flex-col">
+<header class="glass sticky top-0 z-50 border-b border-slate-200">
+ <div class="max-w-7xl mx-auto px-4 h-[76px] flex items-center justify-between gap-3">
+  <button onclick="showPage('home')" class="flex items-center gap-3 text-right">
+   <img src="/images/sayed_hassan.png" alt="أ. سيد حسن" class="w-11 h-11 rounded-2xl object-cover border-2 border-cyan-500">
+   <span><b class="block text-lg text-blue-950">أ. سيد حسن</b><small class="text-slate-500">منصة الكيمياء التعليمية</small></span>
+  </button>
+  <nav class="navlinks items-center gap-2 text-sm font-bold">
+   <button class="px-4 py-2 rounded-xl transition hover:bg-slate-100 text-slate-700" onclick="showPage('home')">الرئيسية</button>
+   <button class="px-4 py-2 rounded-xl transition hover:bg-slate-100 text-slate-700" onclick="document.getElementById('years').scrollIntoView({behavior:'smooth'})">المراحل الدراسية</button>
+   <button class="px-4 py-2 rounded-xl transition hover:bg-slate-100 text-slate-700" onclick="goToDashboard()">بوابة التعلم</button>
+   <button class="px-4 py-2 rounded-xl transition hover:bg-slate-100 text-slate-700" onclick="showPage('social')">التواصل الاجتماعي</button>
+  </nav>
+  <div id="guestActions" class="flex gap-2">
+   <button class="btn btn-soft text-sm" onclick="openModal('login')">دخول</button>
+   <button class="btn btn-primary text-sm" onclick="openModal('register')">حساب جديد</button>
+  </div>
+  <div id="userActions" class="hidden items-center gap-2">
+   <button class="btn btn-primary text-sm" id="userDashboardBtn" onclick="goToDashboard()">لوحتي</button>
+   <button class="btn text-sm bg-red-50 text-red-600" onclick="logout()">خروج</button>
+  </div>
+  <button class="mobile-nav hidden text-2xl p-2" onclick="document.getElementById('mobileLinks').classList.toggle('hidden')" aria-label="القائمة">☰</button>
+ </div>
+ <div id="mobileLinks" class="hidden px-4 pb-4 space-y-3 font-bold">
+  <button class="block" onclick="showPage('home')">الرئيسية</button>
+  <button class="block" onclick="goToDashboard()">بوابة التعلم</button>
+  <button class="block" onclick="showPage('social')">التواصل الاجتماعي</button>
+ </div>
+</header>
+
+<main class="flex-1">
+<section id="page-home" class="page active">
+ <div class="bg-gradient-to-br from-slate-950 via-blue-950 to-cyan-950 text-white">
+  <div class="max-w-7xl mx-auto px-4 py-20 md:py-28 grid md:grid-cols-2 gap-12 items-center">
+   <div>
+    <span class="inline-block rounded-full border border-cyan-400/40 bg-cyan-400/10 px-4 py-2 text-cyan-200 text-sm font-bold mb-5">التعلم بوضوح وثقة</span>
+    <h1 class="hero-title text-5xl font-black leading-tight mb-5">افهم الكيمياء<br><span class="text-cyan-300">بخطوات بسيطة</span></h1>
+    <p class="text-slate-300 leading-8 mb-8">منصة تعليمية مجانية لمتابعة دروس الكيمياء للمرحلة الثانوية والبكالوريا المصرية مع تنظيم المحتوى، المراجعات، والامتحانات الإلكترونية.</p>
+    <div class="flex flex-wrap gap-3">
+     <button class="btn btn-primary" onclick="openModal('register')">إنشاء حساب طالب</button>
+     <button class="btn border border-white/30 text-white" onclick="goToDashboard()">الدخول للمنصة</button>
+    </div>
+   </div>
+   <div class="card bg-white/10 border-white/15 p-8 text-center">
+    <img src="/images/sayed_hassan.png" alt="أ. سيد حسن" class="w-32 h-32 rounded-full mx-auto mb-5 object-cover border-4 border-cyan-400 shadow-lg">
+    <h2 class="text-2xl font-black">أ. سيد حسن</h2>
+    <p class="text-cyan-200 mt-2">الكيمياء • الثانوية العامة • البكالوريا المصرية</p>
+    <p class="text-slate-300 text-sm mt-6">مساحة منظمة للتعلم ومتابعة المحتوى الدراسي والامتحانات</p>
+   </div>
+  </div>
+ </div>
+
+ <section id="years" class="max-w-7xl mx-auto px-4 py-16">
+  <div class="text-center mb-10">
+   <p class="text-blue-700 font-extrabold">اختر مرحلتك الدراسية</p>
+   <h2 class="text-3xl font-black mt-2">الأقسام التعليمية</h2>
+  </div>
+  <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+   <div class="card p-6"><div class="text-cyan-700 text-3xl mb-4">١</div><h3 class="font-black text-xl mb-5">الصف الأول الثانوي</h3><button class="btn btn-soft w-full" onclick="chooseYear('1','secondary')">ابدأ الدراسة</button></div>
+   <div class="card p-6"><div class="text-blue-700 text-3xl mb-4">٢</div><h3 class="font-black text-xl mb-5">الصف الثاني الثانوي</h3><button class="btn btn-soft w-full" onclick="chooseYear('2','secondary')">ابدأ الدراسة</button></div>
+   <div class="card p-6"><div class="text-indigo-700 text-3xl mb-4">٣</div><h3 class="font-black text-xl mb-5">الصف الثالث الثانوي</h3><button class="btn btn-soft w-full" onclick="chooseYear('3','secondary')">ابدأ الدراسة</button></div>
+   <div class="card p-6"><div class="text-cyan-700 text-3xl mb-4">ب</div><h3 class="font-black text-xl mb-5">البكالوريا المصرية</h3><button class="btn btn-soft w-full" onclick="chooseYear('bac','baccalaureate')">ابدأ الدراسة</button></div>
+  </div>
+ </section>
+</section>
+
+<section id="page-social" class="page max-w-5xl mx-auto px-4 py-12">
+ <div class="mb-8">
+  <p class="text-cyan-700 font-extrabold">حضور المنصة على الإنترنت</p>
+  <h1 class="text-3xl font-black mt-2">روابط التواصل الاجتماعي</h1>
+  <p class="text-slate-600 mt-3 leading-7">تابع الصفحات والقنوات الرسمية للأستاذ سيد حسن لمعرفة مواعيد الحصص والمراجعات.</p>
+ </div>
+ <div class="card p-6">
+  <div id="socialPreview" class="flex flex-wrap gap-3">
+   <p class="text-slate-500 text-sm">جاري تحميل الروابط الرسمية...</p>
+  </div>
+ </div>
+</section>
+</main>
+
+<footer class="bg-slate-950 text-slate-300 py-9 text-center mt-10">
+ <b class="text-white text-lg">منصة الكيمياء – أ. سيد حسن</b>
+ <p class="text-sm mt-2">جميع الحقوق محفوظة للأستاذ سيد حسن</p>
+ <p class="text-cyan-300 text-sm mt-1">تصميم وتطوير: يوسف أبو النصر</p>
+ <div class="flex justify-center gap-5 mt-4 text-sm">
+  <button onclick="showPage('social')">حسابات التواصل</button>
+  <button onclick="showPage('home')">الرئيسية</button>
+ </div>
+</footer>
+
+<div id="authModal" class="modal">
+ <div class="bg-white rounded-2xl p-6 w-full max-w-md relative">
+  <button class="absolute left-5 top-4 text-2xl" onclick="closeModal()">×</button>
+  <h2 id="authTitle" class="text-2xl font-black mb-5">تسجيل الدخول</h2>
+  <form id="authForm" class="space-y-3" onsubmit="submitAuth(event)">
+   <div id="registerFields" class="hidden space-y-3">
+    <input id="authName" class="field" placeholder="الاسم بالكامل" maxlength="100">
+    <input id="authPhone" class="field" placeholder="رقم الهاتف">
+    <div class="grid grid-cols-2 gap-2">
+     <select id="authStage" class="field" onchange="syncStageGrade()">
+      <option value="secondary">الثانوية العامة</option>
+      <option value="baccalaureate">البكالوريا المصرية</option>
+     </select>
+     <select id="authGrade" class="field">
+      <option value="1">الصف الأول الثانوي</option>
+      <option value="2">الصف الثاني الثانوي</option>
+      <option value="3" selected>الصف الثالث الثانوي</option>
+      <option value="bac">البكالوريا المصرية</option>
+     </select>
+    </div>
+   </div>
+   <input id="authEmail" class="field" type="email" required placeholder="البريد الإلكتروني">
+   <input id="authPassword" class="field" type="password" required minlength="8" placeholder="كلمة المرور (8 أحرف على الأقل)">
+   <button id="authSubmit" class="btn btn-primary w-full">دخول</button>
+  </form>
+ </div>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+'use strict';
+let authMode = 'login', currentUser = null;
+const socials = [
+ ['facebook','فيسبوك (Facebook)'],['instagram','إنستغرام (Instagram)'],['youtube','يوتيوب (YouTube)'],
+ ['tiktok','تيك توك (TikTok)'],['telegram','تيليجرام (Telegram)'],['whatsapp','واتساب (WhatsApp)']
+];
+
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove('show'),3200)}
+function showPage(name){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));const page=document.getElementById('page-'+name);if(page)page.classList.add('active');window.scrollTo({top:0,behavior:'smooth'});if(name==='social')loadSocial();}
+function syncStageGrade(){const st=document.getElementById('authStage').value;if(st==='baccalaureate')document.getElementById('authGrade').value='bac';else if(document.getElementById('authGrade').value==='bac')document.getElementById('authGrade').value='3';}
+
+function chooseYear(grade, stage){
+ if(currentUser){ goToDashboard(); return; }
+ openModal('register');
+ document.getElementById('authStage').value = stage;
+ document.getElementById('authGrade').value = grade;
+}
+
+function openModal(mode){
+ authMode = mode;
+ document.getElementById('authTitle').textContent = mode==='login' ? 'تسجيل الدخول' : 'إنشاء حساب طالب جديد';
+ document.getElementById('authSubmit').textContent = mode==='login' ? 'دخول' : 'إنشاء الحساب';
+ document.getElementById('registerFields').classList.toggle('hidden', mode==='login');
+ document.getElementById('authName').required = (mode==='register');
+ document.getElementById('authModal').classList.add('show');
+}
+function closeModal(){document.getElementById('authModal').classList.remove('show')}
+
+function goToDashboard(){
+ if(!currentUser){ openModal('login'); return; }
+ location.href = currentUser.role === 'admin' ? '/admin' : '/student';
+}
+
+async function submitAuth(e){
+ e.preventDefault();
+ const payload = {
+  email: document.getElementById('authEmail').value.trim(),
+  password: document.getElementById('authPassword').value
+ };
+ if(authMode === 'register'){
+  payload.name = document.getElementById('authName').value.trim();
+  payload.phone = document.getElementById('authPhone').value.trim();
+  payload.stage = document.getElementById('authStage').value;
+  payload.grade = document.getElementById('authGrade').value;
+ }
+ const endpoint = authMode === 'login' ? '/api/login' : '/api/register';
+ try{
+  const res = await fetch(endpoint, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload)});
+  const data = await res.json();
+  if(!res.ok) throw new Error(data.message || 'تعذر إتمام العملية');
+  toast('تم تسجيل الدخول بنجاح، جاري التحويل...');
+  setTimeout(()=>{ location.href = data.user.role === 'admin' ? '/admin' : '/student'; }, 700);
+ }catch(err){ toast(err.message); }
+}
+
+async function checkSession(){
+ try{
+  const res = await fetch('/api/me');
+  if(!res.ok) return;
+  const data = await res.json();
+  currentUser = data.user;
+  document.getElementById('guestActions').classList.add('hidden');
+  document.getElementById('userActions').classList.remove('hidden');
+  document.getElementById('userActions').classList.add('flex');
+  document.getElementById('userDashboardBtn').textContent = currentUser.role === 'admin' ? 'لوحة الإدارة' : 'واجهة الطالب';
+ }catch(_){}
+}
+
+async function logout(){
+ await fetch('/api/logout', {method:'POST'});
+ currentUser = null;
+ location.reload();
+}
+
+async function loadSocial(){
+ try{
+  const res = await fetch('/api/social');
+  const data = await res.json();
+  const links = data.links || {};
+  const box = document.getElementById('socialPreview');
+  box.replaceChildren();
+  let count = 0;
+  socials.forEach(([key, label])=>{
+   if(!links[key]) return;
+   count++;
+   const a = document.createElement('a');
+   a.href = links[key]; a.target = '_blank'; a.rel = 'noopener noreferrer';
+   a.className = 'btn btn-soft';
+   a.textContent = label + ' ↗';
+   box.append(a);
+  });
+  if(!count){
+   box.innerHTML = '<p class="text-slate-500 text-sm">لم تتم إضافة روابط تواصل بعد من لوحة الإدارة.</p>';
+  }
+ }catch(_){}
+}
+
+checkSession();
+loadSocial();
+</script>
+</body>
+</html>

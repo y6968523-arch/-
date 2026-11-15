@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#102a43">
+<title>لوحة الإدارة | منصة أ. سيد حسن</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+:root{--navy:#102a43;--blue:#2563eb;--cyan:#06b6d4;--bg:#f4f7fb}
+*{box-sizing:border-box}body{font-family:Cairo,sans-serif;background:var(--bg);color:#102033}
+.btn{border-radius:12px;padding:10px 16px;font-weight:800;transition:.2s}
+.btn-primary{background:linear-gradient(120deg,#0e7490,#2563eb);color:white}.btn-primary:hover{filter:brightness(1.08)}
+.btn-soft{background:#eaf2ff;color:#1d4ed8}
+.field{width:100%;border:1px solid #d8e1ec;border-radius:12px;padding:10px 13px;background:white;color:#102033}
+.card{background:white;border:1px solid #e2e8f0;border-radius:20px;box-shadow:0 8px 30px #0f172a08}
+.nav-item{width:100%;text-align:right;padding:12px 15px;border-radius:12px;font-weight:800;color:#cbd5e1;transition:.2s}
+.nav-item:hover,.nav-item.active{background:linear-gradient(120deg,#0e7490,#2563eb);color:white}
+.sec{display:none}.sec.active{display:block}
+.toast{position:fixed;bottom:20px;left:20px;z-index:80;background:#102a43;color:white;padding:12px 18px;border-radius:12px;opacity:0;transform:translateY(15px);transition:.25s;pointer-events:none}.toast.show{opacity:1;transform:none}
+</style>
+</head>
+<body class="min-h-screen flex flex-col lg:flex-row">
+<aside class="w-full lg:w-72 bg-slate-950 text-white p-6 flex flex-col justify-between shrink-0">
+ <div>
+  <div class="flex items-center gap-3 mb-8">
+   <img src="/images/sayed_hassan.png" alt="أ. سيد حسن" class="w-11 h-11 rounded-2xl object-cover border-2 border-cyan-400">
+   <div><b class="block text-lg">لوحة الإدارة</b><small class="text-cyan-300">أ. سيد حسن</small></div>
+  </div>
+  <nav class="space-y-2 text-sm">
+   <button class="nav-item active" onclick="showAdminSec('students', this)">الطلاب المسجلون</button>
+   <button class="nav-item" onclick="showAdminSec('courses', this)">الكورسات والمراجعات</button>
+   <button class="nav-item" onclick="showAdminSec('lessons', this)">الدروس والفيديوهات</button>
+   <button class="nav-item" onclick="showAdminSec('exams', this)">الامتحانات والأسئلة</button>
+   <button class="nav-item" onclick="showAdminSec('results', this)">درجات وتقييمات الطلاب</button>
+   <button class="nav-item" onclick="showAdminSec('social', this)">روابط التواصل الاجتماعي</button>
+  </nav>
+ </div>
+ <div class="mt-8 pt-6 border-t border-slate-800 space-y-2">
+  <a href="/student" class="btn bg-slate-800 text-cyan-300 w-full block text-center text-sm">معاينة واجهة الطالب</a>
+  <button class="btn bg-red-500/20 text-red-300 w-full text-sm" onclick="logout()">تسجيل الخروج</button>
+ </div>
+</aside>
+
+<main class="flex-1 p-5 md:p-10 max-w-6xl">
+ <!-- إحصائيات سريعة -->
+ <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+  <div class="card p-4"><small class="text-slate-500 font-bold">إجمالي الطلاب</small><b id="statStudents" class="block text-2xl font-black text-blue-950 mt-1">0</b></div>
+  <div class="card p-4"><small class="text-slate-500 font-bold">الكورسات والمراجعات</small><b id="statCourses" class="block text-2xl font-black text-cyan-700 mt-1">0</b></div>
+  <div class="card p-4"><small class="text-slate-500 font-bold">الدروس المرفوعة</small><b id="statLessons" class="block text-2xl font-black text-indigo-700 mt-1">0</b></div>
+  <div class="card p-4"><small class="text-slate-500 font-bold">الامتحانات</small><b id="statExams" class="block text-2xl font-black text-emerald-700 mt-1">0</b></div>
+ </div>
+
+ <!-- 1. الطلاب والصلاحيات -->
+ <section id="sec-students" class="sec active space-y-6">
+  <h1 class="text-2xl font-black text-blue-950">إدارة الطلاب المسجلين وتحديد الصفوف</h1>
+  <div class="card p-6 overflow-x-auto">
+   <table class="w-full text-right text-sm">
+    <thead><tr class="border-b border-slate-200 text-slate-500"><th class="pb-3">الطالب</th><th class="pb-3">الهاتف</th><th class="pb-3">الصف</th><th class="pb-3">الحالة</th><th class="pb-3">إدارة الحساب</th></tr></thead>
+    <tbody id="studentsBody"></tbody>
+   </table>
+  </div>
+ </section>
+
+ <!-- 2. الكورسات والمراجعات -->
+ <section id="sec-courses" class="sec space-y-6">
+  <h1 class="text-2xl font-black text-blue-950">إدارة الكورسات والمراجعات النهائية</h1>
+  <div class="card p-6">
+   <h2 class="font-black text-lg mb-4">إضافة كورس أو مراجعة جديدة</h2>
+   <form class="grid md:grid-cols-2 gap-4" onsubmit="createCourse(event)">
+    <input id="cTitle" class="field" placeholder="عنوان الكورس أو المراجعة" required>
+    <select id="cType" class="field"><option value="course">كورس دراسي</option><option value="revision">مراجعة نهائية</option></select>
+    <select id="cGrade" class="field"><option value="1">الصف الأول الثانوي</option><option value="2">الصف الثاني الثانوي</option><option value="3" selected>الصف الثالث الثانوي</option><option value="bac">البكالوريا المصرية</option></select>
+    <div class="flex items-center text-sm font-bold text-emerald-700 bg-emerald-50 px-3 rounded-xl">جميع الكورسات والمراجعات مجانية لطلاب الصف المحدد</div>
+    <textarea id="cDesc" class="field md:col-span-2" rows="2" placeholder="وصف الكورس"></textarea>
+    <button class="btn btn-primary md:col-span-2">حفظ الكورس في قاعدة البيانات</button>
+   </form>
+  </div>
+  <div id="coursesList" class="grid md:grid-cols-2 gap-4"></div>
+ </section>
+
+ <!-- 3. الدروس والفيديوهات -->
+ <section id="sec-lessons" class="sec space-y-6">
+  <h1 class="text-2xl font-black text-blue-950">إدارة الدروس والفيديوهات</h1>
+  <div class="card p-6">
+   <h2 class="font-black text-lg mb-4">إضافة درس جديد</h2>
+   <form class="grid md:grid-cols-2 gap-4" onsubmit="createLesson(event)">
+    <select id="lCourseId" class="field md:col-span-2" required><option value="">اختر الكورس...</option></select>
+    <input id="lUnit" class="field" placeholder="عنوان الوحدة / الفصل" required>
+    <input id="lTitle" class="field" placeholder="عنوان الدرس" required>
+    <input id="lVideo" class="field md:col-span-2" type="url" placeholder="رابط الفيديو (https://...)" required>
+    <div class="flex items-center text-sm font-bold text-cyan-800 bg-cyan-50 px-3 rounded-xl">محمي على الخادم ومتاح لطلاب الصف</div>
+    <input id="lOrder" class="field" type="number" value="1" min="1" placeholder="ترتيب الدرس">
+    <textarea id="lDesc" class="field md:col-span-2" rows="2" placeholder="وصف الدرس وملاحظات الحصة"></textarea>
+    <button class="btn btn-primary md:col-span-2">نشر الدرس</button>
+   </form>
+  </div>
+  <div id="lessonsList" class="space-y-3"></div>
+ </section>
+
+ <!-- 4. الامتحانات والأسئلة -->
+ <section id="sec-exams" class="sec space-y-6">
+  <h1 class="text-2xl font-black text-blue-950">إدارة امتحانات الحصة والامتحانات الشاملة</h1>
+  <div class="card p-6">
+   <h2 class="font-black text-lg mb-4">إنشاء امتحان جديد</h2>
+   <form class="grid md:grid-cols-4 gap-4" onsubmit="createExam(event)">
+    <input id="exTitle" class="field md:col-span-2" placeholder="عنوان الامتحان" required>
+    <select id="exType" class="field"><option value="lesson">امتحان حصة</option><option value="comprehensive">امتحان شامل</option></select>
+    <select id="exGrade" class="field"><option value="1">الأول الثانوي</option><option value="2">الثاني الثانوي</option><option value="3" selected>الثالث الثانوي</option><option value="bac">البكالوريا</option></select>
+    <input id="exDuration" class="field" type="number" value="30" min="5" placeholder="المدة بالدقائق">
+    <input id="exPass" class="field" type="number" value="50" min="1" max="100" placeholder="نسبة النجاح %">
+    <button class="btn btn-primary md:col-span-2">إنشاء الامتحان</button>
+   </form>
+  </div>
+  <div id="examsList" class="space-y-4"></div>
+ </section>
+
+ <!-- 5. درجات وتقييمات الطلاب -->
+ <section id="sec-results" class="sec space-y-6">
+  <h1 class="text-2xl font-black text-blue-950">درجات وتقييمات الطلاب في الامتحانات</h1>
+  <div class="card p-6 overflow-x-auto">
+   <table class="w-full text-right text-sm">
+    <thead><tr class="border-b border-slate-200 text-slate-500"><th class="pb-3">الطالب</th><th class="pb-3">الامتحان</th><th class="pb-3">الدرجة</th><th class="pb-3">النسبة / الحالة</th><th class="pb-3">وقت التسليم</th></tr></thead>
+    <tbody id="resultsBody"></tbody>
+   </table>
+  </div>
+ </section>
+
+ <!-- 6. التواصل الاجتماعي -->
+ <section id="sec-social" class="sec space-y-6">
+  <h1 class="text-2xl font-black text-blue-950">إدارة روابط التواصل الاجتماعي</h1>
+  <div class="card p-6 max-w-2xl">
+   <form class="space-y-4" onsubmit="saveSocial(event)">
+    <div class="grid md:grid-cols-2 gap-4" id="socialInputs"></div>
+    <button class="btn btn-primary">حفظ الروابط لجميع الزوار</button>
+   </form>
+  </div>
+ </section>
+</main>
+
+<!-- مودال تفعيل الكورسات لطالب -->
+<div id="enrollModal" class="fixed inset-0 z-50 bg-slate-950/75 hidden items-center justify-center p-4">
+ <div class="bg-white rounded-2xl p-6 w-full max-w-lg relative">
+  <button class="absolute left-5 top-4 text-2xl" onclick="closeEnrollModal()">×</button>
+  <h2 class="text-xl font-black mb-1">صلاحيات الكورسات للطالب</h2>
+  <p id="enrollStudentName" class="text-sm text-cyan-700 font-bold mb-4"></p>
+  <div id="enrollCoursesBox" class="space-y-3 max-h-80 overflow-y-auto"></div>
+ </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+'use strict';
+const gradeNames = {'1':'الأول الثانوي','2':'الثاني الثانوي','3':'الثالث الثانوي','bac':'البكالوريا'};
+const socials = [
+ ['facebook','Facebook'],['instagram','Instagram'],['youtube','YouTube'],
+ ['tiktok','TikTok'],['telegram','Telegram'],['whatsapp','WhatsApp']
+];
+let cachedCourses = [];
+
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove('show'),3000)}
+
+function showAdminSec(name, btn){
+ document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+ document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+ document.getElementById('sec-'+name).classList.add('active');
+ btn.classList.add('active');
+ if(name==='students') loadStudents();
+ if(name==='courses') loadCourses();
+ if(name==='lessons') loadLessons();
+ if(name==='exams') loadExams();
+ if(name==='results') loadResults();
+ if(name==='social') loadSocial();
+}
+
+async function loadStats(){
+ const res = await fetch('/api/admin/stats');
+ if(!res.ok){ location.href = '/'; return; }
+ const {stats} = await res.json();
+ document.getElementById('statStudents').textContent = stats.students;
+ document.getElementById('statCourses').textContent = stats.courses;
+ document.getElementById('statLessons').textContent = stats.lessons;
+ document.getElementById('statExams').textContent = stats.exams;
+}
+
+async function loadStudents(){
+ await loadCoursesData();
+ const res = await fetch('/api/admin/students');
+ const {students} = await res.json();
+ const tbody = document.getElementById('studentsBody');
+ tbody.replaceChildren();
+ students.forEach(s=>{
+  const tr = document.createElement('tr');
+  tr.className = 'border-b border-slate-100';
+  tr.innerHTML = `
+   <td class="py-3"><b class="block">${s.name}</b><small class="text-slate-500">${s.email}</small></td>
+   <td class="py-3">${s.phone || '-'}</td>
+   <td class="py-3">
+    <select class="field !py-1 !px-2 !w-auto text-xs" onchange="changeStudentGrade(${s.id}, this.value)">
+     <option value="1" ${s.grade==='1'?'selected':''}>الأول الثانوي</option>
+     <option value="2" ${s.grade==='2'?'selected':''}>الثاني الثانوي</option>
+     <option value="3" ${s.grade==='3'?'selected':''}>الثالث الثانوي</option>
+     <option value="bac" ${s.grade==='bac'?'selected':''}>البكالوريا</option>
+    </select>
+   </td>
+   <td class="py-3"><span class="px-2 py-1 rounded-full text-xs font-bold ${s.is_active?'bg-emerald-100 text-emerald-800':'bg-red-100 text-red-800'}">${s.is_active?'نشط':'موقوف'}</span></td>
+   <td class="py-3 flex flex-wrap gap-2">
+    <button class="btn btn-soft !py-1.5 !px-3 text-xs" onclick="toggleStudentActive(${s.id}, ${s.is_active})">${s.is_active?'إيقاف الحساب':'تفعيل الحساب'}</button>
+   </td>
+  `;
+  tbody.append(tr);
+ });
+}
+
+async function changeStudentGrade(id, grade){
+ await fetch(`/api/admin/students/${id}`, {method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({grade})});
+ toast('تم تحديث الصف الدراسي للطالب');
+}
+
+async function toggleStudentActive(id, active){
+ await fetch(`/api/admin/students/${id}`, {method:'PATCH', headers:{'Content-Type':'application/json'}, body:JSON.stringify({is_active: active ? 0 : 1})});
+ loadStudents();
+ toast('تم تحديث حالة الحساب');
+}
+
+function openEnrollModal(student){
+ document.getElementById('enrollStudentName').textContent = `${student.name} (${gradeNames[student.grade] || student.grade})`;
+ const enrolledIds = (student.enrolled_course_ids || '').split(',').map(Number);
+ const box = document.getElementById('enrollCoursesBox');
+ box.replaceChildren();
+
+ const relevant = cachedCourses.filter(c => c.grade === student.grade);
+ if(!relevant.length){
+  box.innerHTML = '<p class="text-slate-500 text-sm">لا توجد كورسات مضافة لهذا الصف الدراسي بعد.</p>';
+ } else {
+  relevant.forEach(c=>{
+   const isEnrolled = enrolledIds.includes(c.id);
+   const row = document.createElement('div');
+   row.className = 'flex justify-between items-center p-3 rounded-xl border border-slate-200';
+   row.innerHTML = `
+    <div><b class="block text-sm">${c.title}</b><small class="text-slate-500">${c.type==='revision'?'مراجعة':'كورس'}</small></div>
+    <button class="btn !py-1.5 !px-3 text-xs ${isEnrolled?'bg-red-50 text-red-600':'btn-primary'}" onclick="toggleEnroll(${student.id}, ${c.id}, '${isEnrolled?'revoked':'active'}', this)">
+     ${isEnrolled ? 'إلغاء التفعيل' : 'تفعيل للطالب'}
+    </button>
+   `;
+   box.append(row);
+  });
+ }
+ document.getElementById('enrollModal').classList.remove('hidden');
+ document.getElementById('enrollModal').classList.add('flex');
+}
+
+async function toggleEnroll(userId, courseId, status, btn){
+ await fetch('/api/admin/enrollments', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({user_id:userId, course_id:courseId, status})});
+ toast(status==='active' ? 'تم تفعيل الكورس للطالب' : 'تم إلغاء التفعيل');
+ closeEnrollModal();
+ loadStudents();
+}
+
+function closeEnrollModal(){
+ document.getElementById('enrollModal').classList.add('hidden');
+ document.getElementById('enrollModal').classList.remove('flex');
+}
+
+async function loadCoursesData(){
+ const res = await fetch('/api/admin/courses');
+ const data = await res.json();
+ cachedCourses = data.courses || [];
+}
+
+async function loadCourses(){
+ await loadCoursesData();
+ const list = document.getElementById('coursesList');
+ list.replaceChildren();
+ cachedCourses.forEach(c=>{
+  const div = document.createElement('div');
+  div.className = 'card p-5 flex justify-between items-start gap-3';
+  div.innerHTML = `
+   <div>
+    <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-blue-50 text-blue-700">${c.type==='revision'?'مراجعة نهائية':'كورس'} • ${gradeNames[c.grade]}</span>
+    <h3 class="font-black text-lg mt-2">${c.title}</h3>
+    <p class="text-xs text-emerald-700 font-bold mt-1">متاح مجاناً لطلاب هذا الصف</p>
+   </div>
+   <button class="btn bg-red-50 text-red-600 !py-1.5 !px-3 text-xs" onclick="deleteCourse(${c.id})">حذف</button>
+  `;
+  list.append(div);
+ });
+}
+
+async function createCourse(e){
+ e.preventDefault();
+ const grade = document.getElementById('cGrade').value;
+ await fetch('/api/admin/courses', {
+  method:'POST', headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({
+   title: document.getElementById('cTitle').value,
+   type: document.getElementById('cType').value,
+   stage: grade === 'bac' ? 'baccalaureate' : 'secondary',
+   grade,
+   is_free: true,
+   description: document.getElementById('cDesc').value
+  })
+ });
+ e.target.reset();
+ toast('تم إضافة الكورس بنجاح');
+ loadCourses();
+ loadStats();
+}
+
+async function deleteCourse(id){
+ if(!confirm('حذف الكورس بجميع دروسه؟')) return;
+ await fetch(`/api/admin/courses/${id}`, {method:'DELETE'});
+ loadCourses();
+ loadStats();
+}
+
+async function loadLessons(){
+ await loadCoursesData();
+ const sel = document.getElementById('lCourseId');
+ sel.innerHTML = '<option value="">اختر الكورس التابع له الدرس...</option>';
+ cachedCourses.forEach(c=>{
+  const opt = document.createElement('option');
+  opt.value = c.id;
+  opt.textContent = `${c.title} (${gradeNames[c.grade]})`;
+  sel.append(opt);
+ });
+
+ const res = await fetch('/api/admin/lessons');
+ const {lessons} = await res.json();
+ const list = document.getElementById('lessonsList');
+ list.replaceChildren();
+ lessons.forEach(l=>{
+  const div = document.createElement('div');
+  div.className = 'card p-4 flex justify-between items-center';
+  div.innerHTML = `
+   <div>
+    <b class="text-blue-950">${l.title}</b>
+    <small class="block text-slate-500">${l.course_title} • ${l.unit_title} ${l.is_preview ? '• (معاينة مجانية)' : ''}</small>
+   </div>
+   <button class="btn bg-red-50 text-red-600 !py-1.5 !px-3 text-xs" onclick="deleteLesson(${l.id})">حذف</button>
+  `;
+  list.append(div);
+ });
+}
+
+async function createLesson(e){
+ e.preventDefault();
+ await fetch('/api/admin/lessons', {
+  method:'POST', headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({
+   course_id: document.getElementById('lCourseId').value,
+   unit_title: document.getElementById('lUnit').value,
+   title: document.getElementById('lTitle').value,
+   video_url: document.getElementById('lVideo').value,
+   is_preview: true,
+   order_index: document.getElementById('lOrder').value,
+   description: document.getElementById('lDesc').value
+  })
+ });
+ e.target.reset();
+ toast('تم نشر الدرس بنجاح');
+ loadLessons();
+ loadStats();
+}
+
+async function deleteLesson(id){
+ if(!confirm('حذف هذا الدرس؟')) return;
+ await fetch(`/api/admin/lessons/${id}`, {method:'DELETE'});
+ loadLessons();
+ loadStats();
+}
+
+async function loadExams(){
+ const res = await fetch('/api/admin/exams');
+ const {exams} = await res.json();
+ const list = document.getElementById('examsList');
+ list.replaceChildren();
+ exams.forEach(ex=>{
+  const div = document.createElement('div');
+  div.className = 'card p-5 space-y-4';
+  div.innerHTML = `
+   <div class="flex justify-between items-center">
+    <div>
+     <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-cyan-50 text-cyan-800">${ex.exam_type==='comprehensive'?'امتحان شامل':'امتحان حصة'} • ${gradeNames[ex.grade]}</span>
+     <h3 class="font-black text-lg mt-1">${ex.title} <small class="text-slate-500">(${ex.questions_count} سؤال)</small></h3>
+    </div>
+    <button class="btn bg-red-50 text-red-600 !py-1.5 !px-3 text-xs" onclick="deleteExam(${ex.id})">حذف</button>
+   </div>
+   <form class="grid md:grid-cols-2 gap-3 pt-3 border-t border-slate-100" onsubmit="addQuestion(event, ${ex.id})">
+    <input class="field md:col-span-2 text-sm" name="q" placeholder="نص السؤال" required>
+    <input class="field text-sm" name="a" placeholder="الاختيار أ" required>
+    <input class="field text-sm" name="b" placeholder="الاختيار ب" required>
+    <input class="field text-sm" name="c" placeholder="الاختيار ج" required>
+    <input class="field text-sm" name="d" placeholder="الاختيار د" required>
+    <select class="field text-sm" name="correct">
+     <option value="a">الإجابة الصحيحة: أ</option>
+     <option value="b">الإجابة الصحيحة: ب</option>
+     <option value="c">الإجابة الصحيحة: ج</option>
+     <option value="d">الإجابة الصحيحة: د</option>
+    </select>
+    <input class="field text-sm" name="exp" placeholder="شرح الإجابة (اختياري)">
+    <button class="btn btn-primary md:col-span-2 text-sm">+ إضافة السؤال للامتحان</button>
+   </form>
+  `;
+  list.append(div);
+ });
+}
+
+async function createExam(e){
+ e.preventDefault();
+ const grade = document.getElementById('exGrade').value;
+ await fetch('/api/admin/exams', {
+  method:'POST', headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({
+   title: document.getElementById('exTitle').value,
+   exam_type: document.getElementById('exType').value,
+   stage: grade === 'bac' ? 'baccalaureate' : 'secondary',
+   grade,
+   duration_minutes: document.getElementById('exDuration').value,
+   passing_score: document.getElementById('exPass').value
+  })
+ });
+ e.target.reset();
+ toast('تم إنشاء الامتحان، أضف الأسئلة الآن');
+ loadExams();
+ loadStats();
+}
+
+async function addQuestion(e, examId){
+ e.preventDefault();
+ const f = e.target;
+ await fetch(`/api/admin/exams/${examId}/questions`, {
+  method:'POST', headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({
+   question_text: f.q.value,
+   option_a: f.a.value,
+   option_b: f.b.value,
+   option_c: f.c.value,
+   option_d: f.d.value,
+   correct_option: f.correct.value,
+   explanation: f.exp.value,
+   marks: 1
+  })
+ });
+ f.reset();
+ toast('تمت إضافة السؤال');
+ loadExams();
+}
+
+async function deleteExam(id){
+ if(!confirm('حذف الامتحان بجميع أسئلته؟')) return;
+ await fetch(`/api/admin/exams/${id}`, {method:'DELETE'});
+ loadExams();
+ loadStats();
+}
+
+
+async function loadResults(){
+ const res = await fetch('/api/admin/results');
+ const {results} = await res.json();
+ const tbody = document.getElementById('resultsBody');
+ tbody.replaceChildren();
+ if(!results || !results.length){
+  tbody.innerHTML = '<tr><td colspan="5" class="py-4 text-slate-500 text-center">لا توجد نتائج مسجلة للطلاب حتى الآن.</td></tr>';
+  return;
+ }
+ results.forEach(r=>{
+  const percentage = Math.round((r.score / r.total_marks) * 100);
+  const statusBadge = r.status === 'passed' 
+   ? '<span class="px-2.5 py-1 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-800">ناجح ('+percentage+'%)</span>'
+   : '<span class="px-2.5 py-1 rounded-full text-xs font-extrabold bg-red-100 text-red-800">راسب ('+percentage+'%)</span>';
+  
+  const tr = document.createElement('tr');
+  tr.className = 'border-b border-slate-100';
+  tr.innerHTML = `
+   <td class="py-3"><b class="block">${r.student_name}</b><small class="text-slate-500">${r.student_email}</small></td>
+   <td class="py-3 font-bold text-blue-950">${r.exam_title}</td>
+   <td class="py-3 font-black">${r.score} / ${r.total_marks}</td>
+   <td class="py-3">${statusBadge}</td>
+   <td class="py-3 text-xs text-slate-500">${new Date(r.created_at).toLocaleString('ar-EG')}</td>
+  `;
+  tbody.append(tr);
+ });
+}
+
+async function loadSocial(){
+ const res = await fetch('/api/social');
+ const {links} = await res.json();
+ const box = document.getElementById('socialInputs');
+ box.replaceChildren();
+ socials.forEach(([key, label])=>{
+  const wrap = document.createElement('label');
+  wrap.className = 'text-sm font-bold block';
+  wrap.textContent = label;
+  const inp = document.createElement('input');
+  inp.className = 'field mt-1'; inp.type = 'url'; inp.id = 'soc-'+key;
+  inp.placeholder = 'https://...'; inp.value = (links && links[key]) || '';
+  wrap.append(inp);
+  box.append(wrap);
+ });
+}
+
+async function saveSocial(e){
+ e.preventDefault();
+ const links = {};
+ socials.forEach(([key])=>{ links[key] = document.getElementById('soc-'+key).value.trim(); });
+ await fetch('/api/admin/social', {method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({links})});
+ toast('تم حفظ روابط التواصل الاجتماعي في قاعدة البيانات');
+}
+
+async function logout(){
+ await fetch('/api/logout', {method:'POST'});
+ location.href = '/';
+}
+
+loadStats();
+loadStudents();
+</script>
+</body>
+</html>

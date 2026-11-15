@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧪</text></svg>">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#102a43">
+<title>واجهة الطالب | منصة أ. سيد حسن</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+:root{--navy:#102a43;--blue:#2563eb;--cyan:#06b6d4;--bg:#f4f7fb}
+*{box-sizing:border-box}body{font-family:Cairo,sans-serif;background:var(--bg);color:#102033}
+.glass{background:#ffffffed;backdrop-filter:blur(12px)}
+.btn{border-radius:12px;padding:10px 16px;font-weight:800;transition:.2s}
+.btn-primary{background:linear-gradient(120deg,#0e7490,#2563eb);color:white}.btn-primary:hover{filter:brightness(1.08)}
+.btn-soft{background:#eaf2ff;color:#1d4ed8}
+.card{background:white;border:1px solid #e2e8f0;border-radius:20px;box-shadow:0 8px 30px #0f172a08}
+.tab-btn{padding:10px 18px;border-radius:12px;font-weight:800;color:#475569;transition:.2s}
+.tab-btn.active{background:linear-gradient(120deg,#0e7490,#2563eb);color:white}
+.lesson-row{border:1px solid #26384c;background:#17283b;border-radius:14px;padding:13px;cursor:pointer;transition:.15s}
+.lesson-row:hover,.lesson-row.selected{border-color:#22d3ee;background:#12344b}
+.toast{position:fixed;bottom:20px;left:20px;z-index:80;background:#102a43;color:white;padding:12px 18px;border-radius:12px;opacity:0;transform:translateY(15px);transition:.25s;pointer-events:none}.toast.show{opacity:1;transform:none}
+</style>
+</head>
+<body class="min-h-screen flex flex-col">
+<header class="glass sticky top-0 z-50 border-b border-slate-200">
+ <div class="max-w-7xl mx-auto px-4 h-[76px] flex items-center justify-between gap-3">
+  <a href="/" class="flex items-center gap-3 text-right">
+   <img src="/images/sayed_hassan.png" alt="أ. سيد حسن" class="w-11 h-11 rounded-2xl object-cover border-2 border-cyan-500">
+   <span><b class="block text-lg text-blue-950">أ. سيد حسن</b><small class="text-slate-500" id="studentHeaderBadge">بوابة الطالب</small></span>
+  </a>
+  <div class="flex items-center gap-3">
+   <span class="hidden sm:inline-block text-sm font-bold text-slate-700" id="studentName">جاري التحميل...</span>
+   <a href="/" class="btn btn-soft text-sm">الرئيسية</a>
+   <button class="btn text-sm bg-red-50 text-red-600" onclick="logout()">خروج</button>
+  </div>
+ </div>
+</header>
+
+<main class="flex-1">
+ <!-- شريط التنقل الخاص بالطالب -->
+ <div class="bg-white border-b border-slate-200">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap gap-2">
+   <button class="tab-btn active" onclick="switchSection('courses', this)">الكورسات والدروس</button>
+   <button class="tab-btn" onclick="switchSection('revisions', this)">المراجعات النهائية</button>
+   <button class="tab-btn" onclick="switchSection('exams', this)">امتحانات الحصة والشاملة</button>
+  </div>
+ </div>
+
+ <!-- 1. الكورسات -->
+ <section id="sec-courses" class="max-w-7xl mx-auto px-4 py-10">
+  <div class="mb-6">
+   <p class="text-cyan-700 font-extrabold">المحتوى الدراسي المخصص لك</p>
+   <h1 class="text-3xl font-black mt-1">الكورسات التعليمية</h1>
+  </div>
+  <div id="coursesGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+ </section>
+
+ <!-- 2. المراجعات -->
+ <section id="sec-revisions" class="hidden max-w-7xl mx-auto px-4 py-10">
+  <div class="mb-6">
+   <p class="text-blue-700 font-extrabold">مراجعات ليلة الامتحان والتدريبات المكثفة</p>
+   <h1 class="text-3xl font-black mt-1">المراجعات النهائية</h1>
+  </div>
+  <div id="revisionsGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+ </section>
+
+ <!-- 3. مشغل الدروس المحمي (نفس التصميم الداكن من الملف الأصلي) -->
+ <section id="sec-player" class="hidden bg-slate-950 text-white min-h-[75vh] py-10">
+  <div class="max-w-7xl mx-auto px-4">
+   <div class="flex flex-wrap justify-between items-center gap-4 mb-7">
+    <div>
+     <p class="text-cyan-300 font-bold" id="playerCourseType">مكتبة الفيديو المحمية</p>
+     <h1 class="text-3xl font-black mt-1" id="playerCourseTitle">عنوان الكورس</h1>
+    </div>
+    <button class="btn bg-slate-800 text-white border border-slate-600" onclick="backToCatalog()">← العودة للكورسات</button>
+   </div>
+   <div class="grid lg:grid-cols-3 gap-6">
+    <div class="lg:col-span-2 space-y-4">
+     <div id="videoFrame" class="bg-black rounded-2xl overflow-hidden border border-slate-700 aspect-video flex items-center justify-center">
+      <p class="text-slate-400">اختر درساً من القائمة الجانبية لبدء المشاهدة</p>
+     </div>
+     <div class="rounded-2xl bg-slate-900 border border-slate-800 p-5">
+      <h2 class="font-black text-xl" id="lessonTitle">لم يتم اختيار درس</h2>
+      <p class="text-slate-300 mt-2 leading-7" id="lessonDesc">سيظهر وصف الدرس هنا عند اختياره.</p>
+     </div>
+    </div>
+    <aside class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+     <h3 class="font-black mb-4 text-cyan-300">قائمة دروس الكورس</h3>
+     <div id="lessonList" class="space-y-3"></div>
+    </aside>
+   </div>
+  </div>
+ </section>
+
+ <!-- 4. الامتحانات -->
+ <section id="sec-exams" class="hidden max-w-7xl mx-auto px-4 py-10">
+  <div class="mb-6">
+   <p class="text-cyan-700 font-extrabold">التقييم المستمر والتصحيح التلقائي</p>
+   <h1 class="text-3xl font-black mt-1">امتحانات الحصة والامتحانات الشاملة</h1>
+  </div>
+  <div id="examsGrid" class="grid md:grid-cols-2 gap-6"></div>
+ </section>
+</main>
+
+<!-- نافذة أداء الامتحان -->
+<div id="examModal" class="fixed inset-0 z-50 bg-slate-950/80 hidden items-center justify-center p-4">
+ <div class="bg-white rounded-2xl w-full max-w-3xl p-6 relative max-h-[90vh] overflow-y-auto">
+  <div class="flex justify-between items-center border-b border-slate-200 pb-4 mb-5">
+   <div>
+    <h2 id="examModalTitle" class="text-2xl font-black text-blue-950"></h2>
+    <p id="examTimerText" class="text-sm font-bold text-cyan-700 mt-1"></p>
+   </div>
+   <button class="text-2xl font-bold text-slate-500" onclick="closeExamModal()">×</button>
+  </div>
+  <form id="examForm" class="space-y-6" onsubmit="submitExam(event)">
+   <div id="examQuestionsBox" class="space-y-5"></div>
+   <button class="btn btn-primary w-full text-lg">تسليم الإجابات وعرض النتيجة</button>
+  </form>
+  <div id="examResultBox" class="hidden space-y-4"></div>
+ </div>
+</div>
+
+<footer class="bg-slate-950 text-slate-300 py-8 text-center mt-10">
+ <b class="text-white">منصة الكيمياء – أ. سيد حسن</b>
+ <p class="text-cyan-300 text-sm mt-1">تصميم وتطوير: يوسف أبو النصر</p>
+</footer>
+
+<div id="toast" class="toast"></div>
+
+<script>
+'use strict';
+const gradeLabels = {'1':'الصف الأول الثانوي','2':'الصف الثاني الثانوي','3':'الصف الثالث الثانوي','bac':'البكالوريا المصرية','all':'الإدارة'};
+let currentUser = null, allCourses = [], currentExamId = null, examTimer = null;
+
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove('show'),3500)}
+
+function switchSection(name, btn){
+ ['courses','revisions','player','exams'].forEach(s=>document.getElementById('sec-'+s).classList.add('hidden'));
+ document.getElementById('sec-'+name).classList.remove('hidden');
+ if(btn){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+ }
+ if(name==='exams') loadExams();
+}
+
+function backToCatalog(){
+ document.getElementById('videoFrame').innerHTML = '';
+ switchSection('courses', document.querySelectorAll('.tab-btn')[0]);
+}
+
+async function init(){
+ const res = await fetch('/api/me');
+ if(!res.ok){ location.href = '/'; return; }
+ const data = await res.json();
+ currentUser = data.user;
+ document.getElementById('studentName').textContent = currentUser.name;
+ document.getElementById('studentHeaderBadge').textContent = gradeLabels[currentUser.grade] || 'واجهة الطالب';
+ await loadCourses();
+}
+
+async function loadCourses(){
+ const res = await fetch('/api/student/courses');
+ const data = await res.json();
+ allCourses = data.courses || [];
+ renderCourseCards(allCourses.filter(c => c.type === 'course'), 'coursesGrid', 'لا توجد كورسات منشورة لصفك الدراسي حالياً.');
+ renderCourseCards(allCourses.filter(c => c.type === 'revision'), 'revisionsGrid', 'لا توجد مراجعات نهائية منشورة حالياً.');
+}
+
+function renderCourseCards(list, gridId, emptyText){
+ const grid = document.getElementById(gridId);
+ grid.replaceChildren();
+ if(!list.length){
+  grid.innerHTML = `<div class="card p-6 text-slate-500 col-span-full">${emptyText}</div>`;
+  return;
+ }
+ list.forEach(c=>{
+  const card = document.createElement('div');
+  card.className = 'card p-6 flex flex-col justify-between';
+  const badge = '<span class="inline-block px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-800">محتوى مجاني متاح لصفك</span>';
+  card.innerHTML = `
+   <div>
+    ${badge}
+    <h3 class="font-black text-xl mt-3 text-blue-950">${c.title}</h3>
+    <p class="text-slate-600 text-sm mt-2 leading-6">${c.description || 'محتوى كيمياء متكامل مع الشرح والتدريبات.'}</p>
+   </div>
+   <button class="btn btn-primary w-full mt-6" onclick="openCourse(${c.id})">
+    دخول ومشاهدة الدروس
+   </button>
+  `;
+  grid.append(card);
+ });
+}
+
+async function openCourse(courseId){
+ const res = await fetch(`/api/student/courses/${courseId}/lessons`);
+ const data = await res.json();
+ if(!res.ok){ toast(data.message); return; }
+
+ document.getElementById('playerCourseTitle').textContent = data.course.title;
+ document.getElementById('playerCourseType').textContent = data.course.type === 'revision' ? 'مراجعة نهائية' : 'كورس دراسي';
+ document.getElementById('lessonTitle').textContent = 'اختر درساً من القائمة';
+ document.getElementById('lessonDesc').textContent = 'جميع دروس هذا الكورس مجانية ومتاحة لطلاب هذا الصف بعد تسجيل الدخول.';
+ document.getElementById('videoFrame').innerHTML = '<p class="text-slate-400">اختر درساً من القائمة الجانبية لبدء المشاهدة</p>';
+
+ const list = document.getElementById('lessonList');
+ list.replaceChildren();
+ if(!data.lessons.length){
+  list.innerHTML = '<p class="text-slate-400 text-sm">لم يتم رفع دروس في هذا الكورس بعد.</p>';
+ } else {
+  data.lessons.forEach((l, idx)=>{
+   const btn = document.createElement('button');
+   btn.className = 'lesson-row w-full text-right flex justify-between items-center gap-2';
+   const lockIcon = '▶';
+   btn.innerHTML = `<div><b class="block text-sm">${idx+1}. ${l.title}</b><small class="text-slate-400">${l.unit_title}</small></div><span class="text-cyan-300 font-bold">${lockIcon}</span>`;
+   btn.onclick = ()=>watchLesson(l.id, btn);
+   list.append(btn);
+  });
+ }
+
+ ['courses','revisions','exams'].forEach(s=>document.getElementById('sec-'+s).classList.add('hidden'));
+ document.getElementById('sec-player').classList.remove('hidden');
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+
+async function watchLesson(lessonId, rowBtn){
+ const res = await fetch(`/api/student/lessons/${lessonId}/watch`);
+ const data = await res.json();
+ if(!res.ok){ toast(data.message); return; }
+
+ document.querySelectorAll('.lesson-row').forEach(r=>r.classList.remove('selected'));
+ if(rowBtn) rowBtn.classList.add('selected');
+
+ const l = data.lesson;
+ document.getElementById('lessonTitle').textContent = l.title;
+ document.getElementById('lessonDesc').textContent = l.description || '';
+
+ const frame = document.getElementById('videoFrame');
+ const url = l.video_url;
+ if(url.includes('youtube.com') || url.includes('youtu.be')){
+  let vidId = '';
+  if(url.includes('v=')) vidId = url.split('v=')[1].split('&')[0];
+  else if(url.includes('youtu.be/')) vidId = url.split('youtu.be/')[1].split('?')[0];
+  frame.innerHTML = `<iframe class="w-full h-full" src="https://www.youtube.com/embed/${vidId}?rel=0" allowfullscreen></iframe>`;
+ } else {
+  frame.innerHTML = `<video class="w-full h-full" controls controlsList="nodownload" playsinline src="${url}" autoplay></video>`;
+ }
+}
+
+async function loadExams(){
+ const res = await fetch('/api/student/exams');
+ const data = await res.json();
+ const grid = document.getElementById('examsGrid');
+ grid.replaceChildren();
+ if(!data.exams.length){
+  grid.innerHTML = '<div class="card p-6 text-slate-500 col-span-full">لا توجد امتحانات منشورة لصفك الدراسي حالياً.</div>';
+  return;
+ }
+ data.exams.forEach(ex=>{
+  const typeBadge = ex.exam_type === 'comprehensive'
+   ? '<span class="px-3 py-1 rounded-full text-xs font-extrabold bg-indigo-100 text-indigo-800">امتحان شامل</span>'
+   : '<span class="px-3 py-1 rounded-full text-xs font-extrabold bg-cyan-100 text-cyan-800">امتحان حصة</span>';
+  const prevScore = ex.best_score !== null
+   ? `<p class="text-sm font-extrabold text-emerald-700 mt-3">أعلى درجة حصلت عليها: ${ex.best_score} / ${ex.total_marks}</p>`
+   : '<p class="text-sm text-slate-500 mt-3">لم تقم بأداء هذا الامتحان بعد</p>';
+
+  const card = document.createElement('div');
+  card.className = 'card p-6 flex flex-col justify-between';
+  card.innerHTML = `
+   <div>
+    ${typeBadge}
+    <h3 class="font-black text-xl mt-3 text-blue-950">${ex.title}</h3>
+    <p class="text-slate-500 text-sm mt-1">المدة: ${ex.duration_minutes} دقيقة • درجة النجاح: ${ex.passing_score}%</p>
+    ${prevScore}
+   </div>
+   <button class="btn btn-primary w-full mt-5" onclick="startExam(${ex.id})">بدء الامتحان</button>
+  `;
+  grid.append(card);
+ });
+}
+
+async function startExam(examId){
+ const res = await fetch(`/api/student/exams/${examId}/start`);
+ const data = await res.json();
+ if(!res.ok){ toast(data.message); return; }
+ if(!data.questions.length){ toast('هذا الامتحان لا يحتوي على أسئلة بعد'); return; }
+
+ currentExamId = examId;
+ document.getElementById('examModalTitle').textContent = data.exam.title;
+ document.getElementById('examForm').classList.remove('hidden');
+ document.getElementById('examResultBox').classList.add('hidden');
+
+ const box = document.getElementById('examQuestionsBox');
+ box.replaceChildren();
+ data.questions.forEach((q, idx)=>{
+  const div = document.createElement('div');
+  div.className = 'p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2';
+  div.innerHTML = `
+   <p class="font-black text-slate-900">${idx+1}. ${q.question_text} <span class="text-xs text-blue-700">(${q.marks} درجة)</span></p>
+   <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="q_${q.id}" value="a" required> <span>أ) ${q.option_a}</span></label>
+   <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="q_${q.id}" value="b"> <span>ب) ${q.option_b}</span></label>
+   <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="q_${q.id}" value="c"> <span>ج) ${q.option_c}</span></label>
+   <label class="flex items-center gap-2 cursor-pointer"><input type="radio" name="q_${q.id}" value="d"> <span>د) ${q.option_d}</span></label>
+  `;
+  box.append(div);
+ });
+
+ let seconds = (data.exam.duration_minutes || 30) * 60;
+ clearInterval(examTimer);
+ examTimer = setInterval(()=>{
+  seconds--;
+  const m = Math.floor(seconds / 60), s = seconds % 60;
+  document.getElementById('examTimerText').textContent = `الوقت المتبقي: ${m}:${s < 10 ? '0'+s : s}`;
+  if(seconds <= 0){
+   clearInterval(examTimer);
+   document.getElementById('examForm').requestSubmit();
+  }
+ }, 1000);
+
+ document.getElementById('examModal').classList.remove('hidden');
+ document.getElementById('examModal').classList.add('flex');
+}
+
+async function submitExam(e){
+ e.preventDefault();
+ clearInterval(examTimer);
+ const fd = new FormData(e.target);
+ const answers = {};
+ fd.forEach((v, k)=>{ if(k.startsWith('q_')) answers[k.replace('q_','')] = v; });
+
+ const res = await fetch(`/api/student/exams/${currentExamId}/submit`, {
+  method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({answers})
+ });
+ const data = await res.json();
+ if(!res.ok){ toast(data.message); return; }
+
+ document.getElementById('examForm').classList.add('hidden');
+ const resBox = document.getElementById('examResultBox');
+ resBox.classList.remove('hidden');
+ resBox.innerHTML = `
+  <div class="p-5 rounded-2xl bg-blue-950 text-white text-center">
+   <p class="text-cyan-300 font-bold">نتيجة الامتحان</p>
+   <h3 class="text-4xl font-black my-2">${data.score} / ${data.totalMarks}</h3>
+  </div>
+  <div class="space-y-3">
+   ${data.review.map((r, i)=>`
+    <div class="p-4 rounded-xl border ${r.is_correct ? 'border-emerald-300 bg-emerald-50' : 'border-red-300 bg-red-50'}">
+     <p class="font-bold">${i+1}. ${r.question_text}</p>
+     <p class="text-sm mt-1">إجابتك: <b>${r.chosen || 'لم تُجب'}</b> | الإجابة الصحيحة: <b>${r.correct_option}</b></p>
+     ${r.explanation ? `<p class="text-xs text-slate-700 mt-1">التفسير: ${r.explanation}</p>` : ''}
+    </div>
+   `).join('')}
+  </div>
+ `;
+ loadExams();
+}
+
+function closeExamModal(){
+ clearInterval(examTimer);
+ document.getElementById('examModal').classList.add('hidden');
+ document.getElementById('examModal').classList.remove('flex');
+}
+
+async function logout(){
+ await fetch('/api/logout', {method:'POST'});
+ location.href = '/';
+}
+
+init();
+</script>
+</body>
+</html>
